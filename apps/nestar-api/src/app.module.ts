@@ -17,7 +17,9 @@ import { DatabaseModule } from './database/database.module';
       uploads: false,
       autoSchemaFile: true,
 
-    }), ComponentsModule, DatabaseModule],
+    }), ComponentsModule, 
+    DatabaseModule
+  ],
   controllers: [AppController],
   providers: [AppService, AppReolver],
 })
