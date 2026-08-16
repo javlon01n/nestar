@@ -86,7 +86,7 @@ const MemberSchema = new Schema({
     default: 0,
     },
 
-    memberViwes: {
+    memberViews: {
     type: Number,
     default: 0,
     },
@@ -101,7 +101,7 @@ const MemberSchema = new Schema({
     default: 0,
     },
 
-    memberWarinings: {
+    memberWarnings: {
     type: Number,
     default: 0,
     },
