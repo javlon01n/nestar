@@ -1,20 +1,19 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { ObjectId } from 'mongoose';
 import { MemberAuthType, MemberStatus, MemberType } from '../../enums/member.enum';
-import type { ObjectId } from 'mongoose';
 
 @ObjectType()
 export class Member {
-    [x: string]: any;
 	@Field(() => String)
-	_id!: ObjectId;
+	_id: ObjectId;
 
-	@Field(() => String)
+	@Field(() => MemberType)
 	memberType: MemberType;
 
-	@Field(() => String)
+	@Field(() => MemberStatus)
 	memberStatus: MemberStatus;
 
-	@Field(() => MemberAuthType) 
+	@Field(() => MemberAuthType)
 	memberAuthType: MemberAuthType;
 
 	@Field(() => String)
@@ -26,7 +25,7 @@ export class Member {
 	memberPassword?: string;
 
 	@Field(() => String, { nullable: true })
-	memberFullname?: string;
+	memberFullName?: string;
 
 	@Field(() => String)
 	memberImage: string;
@@ -38,26 +37,28 @@ export class Member {
 	memberDesc?: string;
 
 	@Field(() => Int)
-	memberProperties: number;
+	memberProperties?: number;
 
 	@Field(() => Int)
-	memberArticles: number;
+	memberArticles?: number;
 
 	@Field(() => Int)
-	memberFollowings!: number;
+	memberFollowers: number;
 
 	@Field(() => Int)
-	memberLikes: number;
+	memberFollowings: number;
 
 	@Field(() => Int)
 	memberPoints: number;
 
 	@Field(() => Int)
+	memberLikes: number;
+
+	@Field(() => Int)
 	memberViews: number;
 
 	@Field(() => Int)
-	memberComments!: number;
-
+	memberComments: number;
 	@Field(() => Int)
 	memberRank: number;
 
@@ -68,7 +69,7 @@ export class Member {
 	memberBlocks: number;
 
 	@Field(() => Date, { nullable: true })
-	deletedAt?: Date;
+	deletedAt: Date;
 
 	@Field(() => Date)
 	createdAt: Date;
@@ -76,6 +77,6 @@ export class Member {
 	@Field(() => Date)
 	updatedAt: Date;
 
-	@Field(() => String, { nullable: true})
+	@Field(() => String, { nullable: true })
 	accessToken?: string;
 }
