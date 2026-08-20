@@ -4,6 +4,7 @@ import type { ObjectId } from 'mongoose';
 
 @ObjectType()
 export class Member {
+    [x: string]: any;
 	@Field(() => String)
 	_id!: ObjectId;
 
