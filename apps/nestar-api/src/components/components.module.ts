@@ -6,18 +6,20 @@ import { CommentModule } from './comment/comment.module';
 import { LikeModule } from './like/like.module';
 import { ViewModule } from './view/view.module';
 import { FollowModule } from './follow/follow.module';
-import { BorardArticleModule } from './borard-article/borard-article.module';
+import { BoardArticleResolver } from './board-article/board-article.resolver';
+import { BoardArticleModule } from './board-article/board-article.module';
 
 @Module({
   imports: [
     MemberModule,  
     AuthModule, 
     PropertyModule, 
-    BorardArticleModule,
+    BoardArticleModule,
     LikeModule,
     ViewModule,
     CommentModule,  
-    FollowModule, 
-    ]
+    FollowModule, BoardArticleModule, 
+    ],
+  providers: [BoardArticleResolver]
 })
 export class ComponentsModule {}
