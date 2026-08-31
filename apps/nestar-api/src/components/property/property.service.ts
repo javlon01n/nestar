@@ -11,11 +11,15 @@ import { PropertyStatus } from '../../libs/enums/property.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { T, StatisticModifier } from '../../libs/types/common';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
-import moment from 'moment';
+import  moment from 'moment';
 import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { BoardArticleStatus } from '../../libs/enums/board-article.enum';
+import { BoardArticleUpdate } from '../../libs/dto/board-article/board-article.update';
+import { BoardArticle } from '../../libs/dto/board-article/board-article';
 
 @Injectable()
 export class PropertyService {
+    [x: string]: any;
 	constructor(
 		@InjectModel('Property') private readonly propertyModel: Model<Property>,
 		private memberService: MemberService,
@@ -63,13 +67,6 @@ export class PropertyService {
 		targetProperty.memberData = await this.memberService.getMember(null, targetProperty.memberId);
 		return targetProperty;
 	}
-
-        public async propertyStatsEditor(input: StatisticModifier): Promise<Property> {
-            const { _id, targetKey, modifier } = input;
-            return await this.propertyModel.findByIdAndUpdate(_id, { $inc: { [targetKey]: modifier } },
-                { new: true }).exec();
-        }
-
 
        public async updateProperty(memberId: ObjectId, input: PropertyUpdate): Promise<Property> {
 	let { propertyStatus, soldAt, deletedAt } = input;
@@ -258,4 +255,33 @@ export class PropertyService {
 
         return result;
     }
+
+        public async updateBoardArticle(memberId: ObjectId, input: BoardArticleUpdate): Promise<BoardArticle> {
+        const { _id, articleStatus } = input;
+
+        const result = await this.boardArticleModel
+            .findOneAndUpdate({ _id: _id, memberId: memberId, articleStatus: BoardArticleStatus.ACTIVE }, input, {
+                new: true,
+            })
+            .exec();
+
+        if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+
+        if (articleStatus === BoardArticleStatus.DELETE) {
+            await this.memberService.memberStatsEditor({
+                _id: memberId,
+                targetKey: 'memberArticles',
+                modifier: -1,
+            });
+        }
+
+        return result;
+    }
+
+
+        public async propertyStatsEditor(input: StatisticModifier): Promise<Property> {
+                const { _id, targetKey, modifier } = input;
+                return await this.propertyModel.findByIdAndUpdate(_id, { $inc: { [targetKey]: modifier } },
+                    { new: true }).exec();
+            }
 }
