@@ -16,6 +16,9 @@ import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { BoardArticleStatus } from '../../libs/enums/board-article.enum';
 import { BoardArticleUpdate } from '../../libs/dto/board-article/board-article.update';
 import { BoardArticle } from '../../libs/dto/board-article/board-article';
+import { LikeService } from '../like/like.service';
+import { LikeInput } from '../../libs/dto/like/like.input';
+import { LikeGroup } from '../../libs/enums/like.enum';
 
 @Injectable()
 export class PropertyService {
@@ -25,6 +28,7 @@ export class PropertyService {
 		private memberService: MemberService,
 		private authService: AuthService,
 		private viewService: ViewService,
+		private likeService: LikeService
 	) {}
 
 	public async createProperty(input: PropertyInput): Promise<Property> {
@@ -62,7 +66,9 @@ export class PropertyService {
 			}
 
 			//meLiked
-		}
+        const likeInput = { memberId: memberId, likeRefId: propertyId, likeGroup: LikeGroup.PROPERTY };
+        targetProperty.meLiked = await this.likeService.checkLikeExistence(likeInput);
+      }
 
 		targetProperty.memberData = await this.memberService.getMember(null, targetProperty.memberId);
 		return targetProperty;
@@ -189,6 +195,28 @@ export class PropertyService {
 
         return result[0];
     }
+    
+
+    public async likeTargetProperty(memberId: ObjectId, likeRefId: ObjectId): Promise<Property> {
+        const target: Property = await this.propertyModel
+            .findOne({ _id: likeRefId, propertyStatus: PropertyStatus.ACTIVE })
+            .exec();
+        if (!target) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+        const input: LikeInput = {
+            memberId: memberId,
+            likeRefId: likeRefId,
+            likeGroup: LikeGroup.PROPERTY,
+        };
+
+        const modifier: number = await this.likeService.toggleLike(input);
+        const result = await this.propertyStatsEditor({ _id: likeRefId, targetKey: 'propertyLikes', modifier: modifier });
+
+        if (!result) throw new InternalServerErrorException(Message.SOMETHING_WENT_WRONG);
+        return result;
+    }
+
+
 
         public async getAllPropertiesByAdmin(input: AllPropertiesInquiry): Promise<Properties> {
         const { propertyStatus, propertyLocationList } = input.search;
@@ -260,7 +288,7 @@ export class PropertyService {
         const { _id, articleStatus } = input;
 
         const result = await this.boardArticleModel
-            .findOneAndUpdate({ _id: _id, memberId: memberId, articleStatus: BoardArticleStatus.ACTIVE }, input, {
+            .findByIdAndUpdate({ _id: _id, memberId: memberId, articleStatus: BoardArticleStatus.ACTIVE }, input, {
                 new: true,
             })
             .exec();
