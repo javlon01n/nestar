@@ -12,7 +12,7 @@ import { ViewGroup } from '../../libs/enums/view.enum';
 import { T, StatisticModifier } from '../../libs/types/common';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import  moment from 'moment';
-import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
+import { lookupAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { BoardArticleStatus } from '../../libs/enums/board-article.enum';
 import { BoardArticleUpdate } from '../../libs/dto/board-article/board-article.update';
 import { BoardArticle } from '../../libs/dto/board-article/board-article';
@@ -119,7 +119,7 @@ export class PropertyService {
                         list: [
                             { $skip: (input.page - 1) * input.limit },
                             { $limit: input.limit },
-                            // meLiked
+                            lookupAuthMemberLiked(memberId),
                             lookupMember,
                             { $unwind: '$memberData' },
                         ],
