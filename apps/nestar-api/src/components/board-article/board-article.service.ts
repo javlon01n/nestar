@@ -14,6 +14,7 @@ import { StatisticModifier, T } from '../../libs/types/common';
 import { LikeService } from '../like/like.service';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { LikeGroup } from '../../libs/enums/like.enum';
+import { lookupAuthMemberLiked,  } from '../../libs/config';
 
 @Injectable()
 export class BoardArticleService {
@@ -111,7 +112,7 @@ export class BoardArticleService {
                         list: [
                             { $skip: (input.page - 1) * input.limit },
                             { $limit: input.limit },
-                            // meLiked
+                            lookupAuthMemberLiked(memberId),
                             lookupMember,
                             { $unwind: '$memberData' },
                         ],
