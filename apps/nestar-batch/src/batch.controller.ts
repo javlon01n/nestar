@@ -25,7 +25,7 @@ public async batchRollback() {
   }
 }
 
-@Cron('20 00 01 * * *', { name: BATCH_TOP_PROPERTIES })
+@Cron('20 00 * * * *', { name: BATCH_TOP_PROPERTIES })
 public async batchTopProperties() {
   try {
     this.logger['context'] = BATCH_TOP_PROPERTIES;
