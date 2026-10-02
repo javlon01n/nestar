@@ -82,7 +82,8 @@ export class CommentService {
         const match: T = { commentRefId: commentRefId, commentStatus: CommentStatus.ACTIVE };
         const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
 
-        const result: Comments[] = await this.commentModel.aggregate([
+        const result: Comments[] = await this.commentModel
+        .aggregate([
             { $match: match },
             { $sort: sort },
             {
@@ -97,14 +98,15 @@ export class CommentService {
                     metaCounter: [{ $count: 'total' }],
                 },
             },
-        ]);
+        ])
+        .exec();
         if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
         return result[0];
     }
 
         public async removeCommentByAdmin(input: ObjectId): Promise<Comment> {
-        const result = await this.commentModel.findByIdAndDelete(input);
+        const result = await this.commentModel.findByIdAndDelete(input).exec();
         if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
         return result;
     }

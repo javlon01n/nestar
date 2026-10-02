@@ -1,0 +1,7 @@
+default_permissions = "nestar-private-env"
+
+[permissions.nestar-private-env]
+extends = ":workspace"
+
+[permissions.nestar-private-env.filesystem]
+"/Users/javlon/Desktop/nestar/.env" = "deny"
